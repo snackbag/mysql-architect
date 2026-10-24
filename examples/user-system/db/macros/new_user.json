@@ -1,13 +1,13 @@
 {
     "params": {
-        "UserId": { "type": "int" },
+        "Username": { "type": "text" },
         "Password": { "type": {"name": "varchar", "length": 255} },
         "Salt": { "type": {"name": "varchar", "length": 255} }
     },
     
     "execute": [{
         "file": "macros/new_user.sql",
-        "values": {"UserId": "UserId", "Password": "Password", "Salt": "Salt"},
+        "values": {"Username": "Username", "Password": "Password", "Salt": "Salt"},
         "return": ["UserId"]
     }]
 }
