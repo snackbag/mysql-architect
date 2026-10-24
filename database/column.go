@@ -14,7 +14,7 @@ type Column struct {
 	References ForeignKey `json:"references"`
 
 	Type    types.DBType
-	RawType interface{} `json:"type"`
+	RawType any `json:"type"`
 }
 
 func (c Column) Represent() string {

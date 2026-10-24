@@ -4,7 +4,7 @@ import "strings"
 
 type Table struct {
 	Name    string
-	Columns []Column `json:"columns"`
+	Columns []*Column `json:"columns"`
 }
 
 func (t Table) Represent() string {
