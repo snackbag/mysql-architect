@@ -15,6 +15,6 @@ func (v Varchar) Represent() string {
 }
 
 func (v Varchar) Validate(value any) bool {
-	_, ok := value.(string)
-	return ok
+	s, ok := value.(string)
+	return ok && len(s) <= v.Length
 }
