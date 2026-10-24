@@ -19,6 +19,10 @@ func UnmarshalTable(data []byte) (Table, error) {
 			return table, fmt.Errorf("column %s contains invalid type: %w", col.Name, err)
 		}
 		col.Type = t
+
+		if col.References.Table != "" {
+			col.References.Self = col.Name
+		}
 	}
 
 	return table, err
