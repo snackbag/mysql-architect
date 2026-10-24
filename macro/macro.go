@@ -91,6 +91,10 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 
 		for i, name := range script.Return {
 			rv[name] = returned[i]
+
+			if script.OverwriteParams {
+				globalParams[name] = returned[i]
+			}
 		}
 	}
 

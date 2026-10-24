@@ -9,9 +9,10 @@ import (
 var paramRegex = regexp.MustCompile("@([A-Za-z_0-9]+)")
 
 type Script struct {
-	File   string            `json:"file"`
-	Values map[string]string `json:"values"`
-	Return []string          `json:"return"`
+	File            string            `json:"file"`
+	Values          map[string]string `json:"values"`
+	Return          []string          `json:"return"`
+	OverwriteParams bool              `json:"overwriteParams"`
 
 	Statements []Statement
 }
