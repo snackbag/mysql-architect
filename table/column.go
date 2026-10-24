@@ -9,6 +9,7 @@ import (
 type Column struct {
 	Name     string `json:"name"`
 	Primary  bool   `json:"primary"`
+	Unique   bool   `json:"unique"`
 	Nullable bool   `json:"nullable"`
 	AutoIncr bool   `json:"autoIncrement"`
 
@@ -30,6 +31,10 @@ func (c Column) Represent() string {
 
 	if c.AutoIncr {
 		b.WriteString(" AUTO_INCREMENT")
+	}
+
+	if c.Unique {
+		b.WriteString(" UNIQUE")
 	}
 
 	if c.Primary {
