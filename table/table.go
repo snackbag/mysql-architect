@@ -9,7 +9,7 @@ import (
 
 type Table struct {
 	Name    string
-	Columns []*Column `json:"columns"`
+	Columns []Column `json:"columns"`
 }
 
 func (t Table) Represent() string {
@@ -46,6 +46,7 @@ func UnmarshalTable(data []byte) (Table, error) {
 		return table, fmt.Errorf("failed to unmarshal table: %w", err)
 	}
 
+	fixedCols := make([]Column, 0)
 	for _, col := range table.Columns {
 		t, err := types.GetType(types.ToFormat(col.RawType))
 		if err != nil {
@@ -56,7 +57,11 @@ func UnmarshalTable(data []byte) (Table, error) {
 		if col.References.Table != "" {
 			col.References.Self = col.Name
 		}
+
+		fixedCols = append(fixedCols, col)
 	}
+
+	table.Columns = fixedCols
 
 	return table, err
 }
