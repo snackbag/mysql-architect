@@ -1,0 +1,1 @@
+SELECT Password, Salt FROM Users WHERE Username = @Username;

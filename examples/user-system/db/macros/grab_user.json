@@ -1,0 +1,11 @@
+{
+    "params": {
+        "Username": { "type": "text" }
+    },
+    
+    "execute": [{
+        "file": "macros/grab_user.sql",
+        "values": {"Username": "Username"},
+        "return": ["Password", "Salt"]
+    }]
+}
