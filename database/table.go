@@ -19,5 +19,7 @@ func (t Table) Represent() string {
 	}
 	b.WriteString(strings.Join(columns, ",\n"))
 
+	b.WriteString("\n)")
+
 	return b.String()
 }
