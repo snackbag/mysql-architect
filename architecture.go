@@ -40,6 +40,9 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	arch := Architecture{Tables: make(map[string]table.Table), Macros: make(map[string]macro.Macro)}
 	for _, t := range raw.Tables {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(t)+".json"))
+		if err != nil {
+			return arch, fmt.Errorf("failed to read table: %w", err)
+		}
 
 		unmarshaled, err := table.UnmarshalTable(t[strings.LastIndex(t, "/")+1:], data)
 		if err != nil {
@@ -51,6 +54,9 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	// load macros
 	for _, m := range raw.Macros {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(m)+".json"))
+		if err != nil {
+			return arch, fmt.Errorf("failed to read macro: %w", err)
+		}
 
 		loaded, err := macro.LoadMacro(dir, m[strings.LastIndex(m, "/")+1:], data)
 		if err != nil {
