@@ -3,6 +3,7 @@ package macro
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -57,6 +58,10 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 }
 
 func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, error) {
+	if m.Name == "" {
+		return nil, errors.New("cannot run nameless macro")
+	}
+
 	rv := make(map[string]any) // return values
 	returned := make([]any, 0)
 
