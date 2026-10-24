@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	architect "github.com/snackbag/mysql-architect"
 )
 
@@ -22,10 +20,16 @@ func main() {
 	}
 	defer db.Close()
 
-	macro := arch.Macros[0]
-	rv, err := macro.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
+	// Create users
+	macro := arch.Macros["new_user"]
+	_, err = macro.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(rv["UserId"])
+
+	macro = arch.Macros["new_admin"]
+	_, err = macro.Exec(db, map[string]any{"Username": "Testwo", "Password": "TestPassword", "Salt": "TestSalt"})
+	if err != nil {
+		panic(err)
+	}
 }

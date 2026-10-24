@@ -1,0 +1,7 @@
+{
+    "columns": [
+        { "name": "PermissionRegId",    "type": "int", "primary": true, "autoIncrement": true },
+        { "name": "UserId",             "type": "int", "references": {"table": "Users", "column": "UserId", "cascade": true} },
+        { "name": "Permission",         "type": "text" }
+    ]
+}

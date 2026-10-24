@@ -1,4 +1,4 @@
 {
-    "tables": ["tables/Users", "tables/UserDiscordAccounts"],
-    "macros": ["macros/new_user", "macros/grab_user"]
+    "tables": ["tables/Users", "tables/UserPermissions"],
+    "macros": ["macros/new_user", "macros/grab_user", "macros/new_admin"]
 }
