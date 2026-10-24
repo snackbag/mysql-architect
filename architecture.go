@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/snackbag/mysql-architect/macro"
 	"github.com/snackbag/mysql-architect/table"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -15,9 +16,11 @@ import (
 
 type Architecture struct {
 	Tables []table.Table
+	Macros []macro.Macro
 }
 
 func LoadArchitecture(dir string) (Architecture, error) {
+	// load file
 	var raw struct {
 		Tables []string `json:"tables"`
 		Macros []string `json:"macros"`
@@ -33,7 +36,8 @@ func LoadArchitecture(dir string) (Architecture, error) {
 		return Architecture{}, fmt.Errorf("failed to unmarshal architecture: %w", err)
 	}
 
-	arch := Architecture{Tables: make([]table.Table, 0)}
+	// load tables
+	arch := Architecture{Tables: make([]table.Table, 0), Macros: make([]macro.Macro, 0)}
 	for _, t := range raw.Tables {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(t)+".json"))
 
@@ -43,6 +47,17 @@ func LoadArchitecture(dir string) (Architecture, error) {
 		}
 		unmarshaled.Name = t[strings.LastIndex(t, "/")+1:]
 		arch.Tables = append(arch.Tables, unmarshaled)
+	}
+
+	// load macros
+	for _, m := range raw.Macros {
+		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(m)+".json"))
+
+		loaded, err := macro.LoadMacro(dir, m[strings.LastIndex(m, "/")+1:], data)
+		if err != nil {
+			return arch, err
+		}
+		arch.Macros = append(arch.Macros, loaded)
 	}
 
 	return arch, nil
