@@ -15,7 +15,7 @@ import (
 )
 
 type Architecture struct {
-	Tables map[string]table.Table
+	Tables []table.Table
 	Macros map[string]macro.Macro
 }
 
@@ -37,7 +37,7 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	}
 
 	// load tables
-	arch := Architecture{Tables: make(map[string]table.Table), Macros: make(map[string]macro.Macro)}
+	arch := Architecture{Tables: make([]table.Table, 0), Macros: make(map[string]macro.Macro)}
 	for _, t := range raw.Tables {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(t)+".json"))
 		if err != nil {
@@ -48,7 +48,7 @@ func LoadArchitecture(dir string) (Architecture, error) {
 		if err != nil {
 			return arch, err
 		}
-		arch.Tables[unmarshaled.Name] = unmarshaled
+		arch.Tables = append(arch.Tables, unmarshaled)
 	}
 
 	// load macros
