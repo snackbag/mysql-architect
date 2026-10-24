@@ -1,10 +1,11 @@
 package table
 
 import (
-	"db-architect/types"
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/snackbag/mysql-architect/types"
 )
 
 type Table struct {

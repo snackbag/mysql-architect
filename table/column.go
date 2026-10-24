@@ -1,8 +1,9 @@
 package table
 
 import (
-	"db-architect/types"
 	"strings"
+
+	"github.com/snackbag/mysql-architect/types"
 )
 
 type Column struct {

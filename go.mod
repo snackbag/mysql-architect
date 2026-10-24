@@ -1,4 +1,4 @@
-module db-architect
+module github.com/snackbag/mysql-architect
 
 go 1.26
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	architect "db-architect"
+	architect "github.com/snackbag/mysql-architect"
 )
 
 const username = "architectUser"
