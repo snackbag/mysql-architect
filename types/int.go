@@ -3,7 +3,7 @@ package types
 type Int struct {
 }
 
-func (i Int) Name() string {
+func (i Int) Kind() string {
 	return "integer"
 }
 

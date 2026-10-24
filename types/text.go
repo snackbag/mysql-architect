@@ -3,7 +3,7 @@ package types
 type Text struct {
 }
 
-func (t Text) Name() string {
+func (t Text) Kind() string {
 	return "text"
 }
 

@@ -6,7 +6,7 @@ type Varchar struct {
 	Length int
 }
 
-func (v Varchar) Name() string {
+func (v Varchar) Kind() string {
 	return fmt.Sprintf("varchar(length=%d)", v.Length)
 }
 
