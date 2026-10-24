@@ -40,18 +40,18 @@ func (t Table) Represent() string {
 	return b.String()
 }
 
-func UnmarshalTable(data []byte) (Table, error) {
+func UnmarshalTable(name string, data []byte) (Table, error) {
 	var table Table
 	err := json.Unmarshal(data, &table)
 	if err != nil {
-		return table, fmt.Errorf("failed to unmarshal table: %w", err)
+		return table, fmt.Errorf("failed to unmarshal table %s: %w", name, err)
 	}
 
 	fixedCols := make([]Column, 0)
 	for _, col := range table.Columns {
 		t, err := types.GetType(types.ToFormat(col.RawType))
 		if err != nil {
-			return table, fmt.Errorf("column %s contains invalid type: %w", col.Name, err)
+			return table, fmt.Errorf("column %s of table %s contains invalid type: %w", col.Name, name, err)
 		}
 		col.Type = t
 
@@ -63,6 +63,7 @@ func UnmarshalTable(data []byte) (Table, error) {
 	}
 
 	table.Columns = fixedCols
+	table.Name = name
 
 	return table, err
 }

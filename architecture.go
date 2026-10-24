@@ -41,11 +41,10 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	for _, t := range raw.Tables {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(t)+".json"))
 
-		unmarshaled, err := table.UnmarshalTable(data)
+		unmarshaled, err := table.UnmarshalTable(t[strings.LastIndex(t, "/")+1:], data)
 		if err != nil {
 			return arch, err
 		}
-		unmarshaled.Name = t[strings.LastIndex(t, "/")+1:]
 		arch.Tables[unmarshaled.Name] = unmarshaled
 	}
 
