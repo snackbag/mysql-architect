@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	architect "github.com/snackbag/mysql-architect"
 )
 
@@ -19,4 +21,11 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	macro := arch.Macros[0]
+	rv, err := macro.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(rv["UserId"])
 }
