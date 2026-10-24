@@ -1,14 +1,13 @@
 {
     "params": {
-        "UserId": { "type": {"link": "Users", "column": "UserId"} },
-        "Password": { "type": {"link": "Users", "column": "Password"} },
-        "Salt": { "type": {"link": "Users", "column": "Salt"} }
+        "UserId": { "type": "int" },
+        "Password": { "type": {"name": "varchar", "length": 255} },
+        "Salt": { "type": {"name": "varchar", "length": 255} }
     },
     
     "execute": [{
-        "file": "new_user.sql",
-        "values": {"UserId": "UserId", "Password": "Password", "Salt": "Salt"}
-    }],
-    
-    "returns": ["UserId"]
+        "file": "macros/new_user.sql",
+        "values": {"UserId": "UserId", "Password": "Password", "Salt": "Salt"},
+        "return": ["UserId"]
+    }]
 }

@@ -1,8 +1,8 @@
 START TRANSACTION;
 
-INSERT INTO Users (Username, PasswordHash, Salt)
+INSERT INTO Users (Username, Password, Salt)
 VALUES (@Username, @Password, @Salt);
 
-SELECT LAST_INSERT_ID() AS UserId;
+SELECT LAST_INSERT_ID();
 
 COMMIT;
