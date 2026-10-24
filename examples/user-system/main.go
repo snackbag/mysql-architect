@@ -1,20 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	architect "db-architect"
 )
 
 func main() {
-	usersFile, err := os.ReadFile("examples/user-system/db/tables/UserDiscordAccounts.json")
+	arch, err := architect.LoadArchitecture("db")
 	if err != nil {
 		panic(err)
 	}
 
-	usersTable, err := table.UnmarshalTable(usersFile)
-	if err != nil {
-		panic(err)
+	for _, table := range arch.Tables {
+		println(table.Represent())
 	}
-
-	fmt.Println(usersTable.Represent())
 }
