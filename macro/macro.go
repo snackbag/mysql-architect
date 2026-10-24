@@ -63,7 +63,6 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 	}
 
 	rv := make(map[string]any) // return values
-	returned := make([]any, 0)
 
 	tx, err := db.Begin()
 	if err = handleTxError(tx, err); err != nil {
@@ -71,6 +70,7 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 	}
 
 	for _, script := range m.Program {
+		returned := make([]any, 0)
 		sqlParams := make(map[string]any)
 		for param, link := range script.Values {
 			sqlParams[param] = globalParams[link]
