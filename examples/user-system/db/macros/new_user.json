@@ -1,0 +1,14 @@
+{
+    "params": {
+        "UserId": { "type": {"link": "Users", "column": "UserId"} },
+        "Password": { "type": {"link": "Users", "column": "Password"} },
+        "Salt": { "type": {"link": "Users", "column": "Salt"} }
+    },
+    
+    "execute": [{
+        "file": "new_user.sql",
+        "values": {"UserId": "UserId", "Password": "Password", "Salt": "Salt"}
+    }],
+    
+    "returns": ["UserId"]
+}

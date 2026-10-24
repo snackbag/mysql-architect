@@ -1,0 +1,4 @@
+{
+    "tables": ["Users", "UserDiscordAccounts"],
+    "macros": ["new_user"]
+}
