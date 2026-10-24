@@ -1,12 +1,15 @@
 package db_architect
 
 import (
+	"database/sql"
 	"db-architect/table"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Architecture struct {
@@ -42,4 +45,10 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	}
 
 	return arch, nil
+}
+
+// InitDB opens a connection to the database. DO NOT FORGET to close this connection to avoid memory leaks!
+func (a Architecture) InitDB(username string, password string, dbName string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s", username, password, dbName))
+	return db, err
 }
