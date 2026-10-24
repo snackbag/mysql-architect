@@ -1,6 +1,6 @@
 {
     "params": {
-        "Username": { "type": "text" }
+        "Username": { "type": {"name": "varchar", "length": 255} }
     },
     
     "execute": [{

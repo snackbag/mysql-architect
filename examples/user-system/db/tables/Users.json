@@ -1,7 +1,7 @@
 {
     "columns": [
         { "name": "UserId",     "type": "int",      "primary": true, "autoIncrement": true },
-        { "name": "Username",   "type": "text" },
+        { "name": "Username",   "type": {"name": "varchar", "length": 255}, "unique": true },
         { "name": "Password",   "type": {"name": "varchar", "length": 255} },
         { "name": "Salt",       "type": {"name": "varchar", "length": 255} }
     ]
