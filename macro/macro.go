@@ -86,12 +86,10 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 		}
 
 		if len(returned) < len(script.Return) {
-			if err = handleTxError(tx, err); err != nil {
-				return rv, fmt.Errorf(
-					"script %q returned %d values, but %d were expected",
-					script.File, len(returned), len(script.Return),
-				)
-			}
+			return rv, fmt.Errorf(
+				"script %q returned %d values, but %d were expected",
+				script.File, len(returned), len(script.Return),
+			)
 		}
 
 		for i, name := range script.Return {
