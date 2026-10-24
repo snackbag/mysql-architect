@@ -1,6 +1,7 @@
 package macro
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -55,6 +56,71 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 	return macro, nil
 }
 
-func (m Macro) Exec(map[string]any) (map[string]any, error) {
-	return nil, nil
+func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, error) {
+	rv := make(map[string]any) // return values
+	returned := make([]any, 0)
+
+	tx, err := db.Begin()
+	if err = handleTxError(tx, err); err != nil {
+		return rv, err
+	}
+
+	for _, script := range m.Program {
+		sqlParams := make(map[string]any)
+		for param, link := range script.Values {
+			sqlParams[param] = globalParams[link]
+		}
+
+		for _, stmt := range script.Statements {
+			args := orderArgs(stmt, sqlParams)
+			values, err := stmt.Exec(tx, args)
+			if err = handleTxError(tx, err); err != nil {
+				return rv, fmt.Errorf("execute script in %q: %w", script.File, err)
+			}
+			returned = append(returned, values...)
+		}
+
+		if len(returned) < len(script.Return) {
+			if err = handleTxError(tx, err); err != nil {
+				return rv, fmt.Errorf(
+					"script %q returned %d values, but %d were expected",
+					script.File, len(returned), len(script.Return),
+				)
+			}
+		}
+
+		for i, name := range script.Return {
+			rv[name] = returned[i]
+		}
+	}
+
+	err = tx.Commit()
+	if err = handleTxError(tx, err); err != nil {
+		return rv, err
+	}
+
+	return rv, nil
+}
+
+func handleTxError(tx *sql.Tx, err error) error {
+	if err != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return fmt.Errorf("failed to rollback Tx (%w): %w", err, rollbackErr)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func orderArgs(stmt Statement, params map[string]any) []any {
+	args := make([]any, 0)
+
+	for _, name := range stmt.ParamMapping {
+		args = append(args, params[name])
+	}
+
+	return args
 }
