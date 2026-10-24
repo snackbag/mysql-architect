@@ -1,4 +1,4 @@
-package db_architect
+package mysql_architect
 
 import (
 	"database/sql"
