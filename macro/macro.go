@@ -76,11 +76,14 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 
 	raw := make(map[string]any) // return values
 
+	// begin tx
 	tx, err := db.Begin()
-	if err = handleTxError(tx, err); err != nil {
+	if err != nil {
 		return Result{raw}, err
 	}
+	defer tx.Rollback()
 
+	// go through each script and execute
 	for _, script := range m.Program {
 		returned := make([]any, 0)
 		sqlParams := make(map[string]any)
@@ -92,10 +95,11 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 			sqlParams[param] = value
 		}
 
+		// execute each statement
 		for _, stmt := range script.Statements {
 			args := orderArgs(stmt, sqlParams)
 			values, err := stmt.Exec(tx, args)
-			if err = handleTxError(tx, err); err != nil {
+			if err != nil {
 				return Result{raw}, fmt.Errorf("execute script in %q: %w", script.File, err)
 			}
 			returned = append(returned, values...)
@@ -118,24 +122,11 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 	}
 
 	err = tx.Commit()
-	if err = handleTxError(tx, err); err != nil {
+	if err != nil {
 		return Result{raw}, err
 	}
 
 	return Result{raw}, nil
-}
-
-func handleTxError(tx *sql.Tx, err error) error {
-	if err != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return fmt.Errorf("failed to rollback Tx (%w): %w", err, rollbackErr)
-		}
-
-		return err
-	}
-
-	return nil
 }
 
 func orderArgs(stmt Statement, params map[string]any) []any {
