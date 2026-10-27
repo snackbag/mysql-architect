@@ -85,7 +85,11 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 		returned := make([]any, 0)
 		sqlParams := make(map[string]any)
 		for param, link := range script.Values {
-			sqlParams[param] = globalParams[link]
+			value, ok := globalParams[link]
+			if !ok {
+				return Result{raw}, fmt.Errorf("script %s wants to fill in SQL parameter %s with macro parameter %s, but the macro parameter does not exist", script.File, param, link)
+			}
+			sqlParams[param] = value
 		}
 
 		for _, stmt := range script.Statements {
