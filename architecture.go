@@ -68,27 +68,38 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	return arch, nil
 }
 
-// InitDB opens a connection to the database and creates the defined tables. Returns the database
+// Init opens a connection to the database and creates the defined tables. Returns the database
 // connection and an error. An error does not necessarily mean the database wasn't connected.
 // DO NOT FORGET to close the connection!
-func (a Architecture) InitDB(username string, password string, dbName string) (*sql.DB, error) {
+func (a Architecture) Init(username string, password string, dbName string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s", username, password, dbName))
 
 	if db == nil || err != nil {
 		return db, err
 	}
 
+	err = a.InitTables(db)
+	if err != nil {
+		return db, err
+	}
+
+	return db, nil
+}
+
+// InitTables ensures all registered tables are created. It is not necessary to call
+// you've already used Init. The use case when manually managing tables, such as needing to create
+// new tables after dropping some or all.
+func (a Architecture) InitTables(db *sql.DB) error {
 	tableErrs := make([]string, 0)
 	for _, t := range a.Tables {
-		_, err = db.Exec("CREATE TABLE IF NOT EXISTS " + t.Represent())
+		err := t.ExecCreate(db)
 		if err != nil {
 			tableErrs = append(tableErrs, "\""+err.Error()+"\"")
 		}
 	}
 
 	if len(tableErrs) > 0 {
-		return db, fmt.Errorf("failed to create all tables: %s", strings.Join(tableErrs, ", "))
+		return fmt.Errorf("failed to create all tables: %s", strings.Join(tableErrs, ", "))
 	}
-
-	return db, nil
+	return nil
 }

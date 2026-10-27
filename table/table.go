@@ -68,3 +68,8 @@ func UnmarshalTable(name string, data []byte) (Table, error) {
 
 	return table, err
 }
+
+func (t Table) ExecCreate(db *sql.DB) error {
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS " + t.Represent())
+	return err
+}
