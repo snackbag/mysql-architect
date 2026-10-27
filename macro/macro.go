@@ -57,16 +57,16 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 	return macro, nil
 }
 
-func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, error) {
+func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 	if m.Name == "" {
-		return nil, errors.New("cannot run nameless macro")
+		return Result{make(map[string]any)}, errors.New("cannot run nameless macro")
 	}
 
-	rv := make(map[string]any) // return values
+	raw := make(map[string]any) // return values
 
 	tx, err := db.Begin()
 	if err = handleTxError(tx, err); err != nil {
-		return rv, err
+		return Result{raw}, err
 	}
 
 	for _, script := range m.Program {
@@ -80,20 +80,20 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 			args := orderArgs(stmt, sqlParams)
 			values, err := stmt.Exec(tx, args)
 			if err = handleTxError(tx, err); err != nil {
-				return rv, fmt.Errorf("execute script in %q: %w", script.File, err)
+				return Result{raw}, fmt.Errorf("execute script in %q: %w", script.File, err)
 			}
 			returned = append(returned, values...)
 		}
 
 		if len(returned) < len(script.Return) {
-			return rv, fmt.Errorf(
+			return Result{raw}, fmt.Errorf(
 				"script %q returned %d values, but %d were expected",
 				script.File, len(returned), len(script.Return),
 			)
 		}
 
 		for i, name := range script.Return {
-			rv[name] = returned[i]
+			raw[name] = returned[i]
 
 			if script.OverwriteParams {
 				globalParams[name] = returned[i]
@@ -103,10 +103,10 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (map[string]any, er
 
 	err = tx.Commit()
 	if err = handleTxError(tx, err); err != nil {
-		return rv, err
+		return Result{raw}, err
 	}
 
-	return rv, nil
+	return Result{raw}, nil
 }
 
 func handleTxError(tx *sql.Tx, err error) error {
