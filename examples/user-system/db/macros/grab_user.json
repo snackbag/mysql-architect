@@ -1,11 +1,11 @@
 {
     "params": {
-        "Username": { "type": {"name": "varchar", "length": 255} }
+        "UserId": { "type": {"name": "varchar", "length": 255} }
     },
     
     "execute": [{
         "file": "macros/grab_user.sql",
-        "values": {"Username": "Username"},
+        "values": {"UserId": "UserId"},
         "return": ["Password", "Salt"]
     }]
 }
