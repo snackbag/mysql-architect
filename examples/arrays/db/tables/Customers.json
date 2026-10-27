@@ -1,0 +1,7 @@
+{
+    "columns": [
+        { "name": "CustomerId",         "type": "int", "primary": true, "autoincrement": true },
+        { "name": "Name",               "type": "text" },
+        { "name": "RegistrationDate",   "type": "timestamp" }
+    ]
+}

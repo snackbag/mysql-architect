@@ -1,0 +1,8 @@
+{
+    "columns": [
+        { "name": "InvoiceId",  "type": "int", "primary": true, "autoIncrement": true },
+        { "name": "CustomerId", "type": "int", "references": {"table": "Customers", "column": "CustomerId", "cascade": true} },
+        { "name": "Amount",     "type": "bigint" },
+        { "name": "Timestamp",  "type": "timestamp" }
+    ]
+}

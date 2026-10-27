@@ -1,0 +1,12 @@
+{
+    "params": {
+        "CustomerId": {"type": "int"},
+        "Amount": {"type": "bigint"},
+        "CurrentTime": {"type": "timestamp"}
+    },
+    
+    "execute": [{
+        "file": "new_invoice.sql",
+        "values": {"CustomerId": "CustomerId", "Amount": "Amount", "Timestamp": "CurrentTime"}
+    }]
+}

@@ -1,0 +1,11 @@
+{
+    "params": {
+        "CustomerId": {"type": "int"}
+    },
+    
+    "execute": [{
+        "file": "get_invoices.sql",
+        "values": {"CustomerId": "CustomerId"},
+        "return": ["InvoiceAmounts"]
+    }]
+}

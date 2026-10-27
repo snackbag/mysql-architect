@@ -1,0 +1,12 @@
+{
+    "params": {
+        "Name": {"type": "text"},
+        "CurrentTime": {"type": "timestamp"}
+    },
+    
+    "execute": [{
+        "file": "macros/new_customer.sql",
+        "values": {"Name": "Name", "RegistrationDate": "CurrentTime"},
+        "return": ["CustomerId"]
+    }]
+}
