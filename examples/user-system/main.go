@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	architect "github.com/snackbag/mysql-architect"
+	"github.com/snackbag/mysql-architect/macro"
 )
 
 const username = "architectUser"
@@ -21,15 +24,29 @@ func main() {
 	defer db.Close()
 
 	// Create users
-	macro := arch.Macros["new_user"]
-	_, err = macro.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
+	newUser := arch.Macros["new_user"]
+	userRes, err := newUser.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
 	if err != nil {
 		panic(err)
 	}
 
-	macro = arch.Macros["new_admin"]
-	_, err = macro.Exec(db, map[string]any{"Username": "Testwo", "Password": "TestPassword", "Salt": "TestSalt"})
+	newAdmin := arch.Macros["new_admin"]
+	adminRes, err := newAdmin.Exec(db, map[string]any{"Username": "Testwo", "Password": "TestPassword", "Salt": "TestSalt"})
 	if err != nil {
 		panic(err)
 	}
+
+	// Extract values from queries
+	newUserId, _ := macro.Get[int](userRes, "UserId") // user id of normal user
+	fmt.Println(fmt.Sprintf("user id (of the normal user): %d", newUserId))
+
+	newUserId, _ = macro.Get[int](adminRes, "UserId") // user id of admin user
+	fmt.Println(fmt.Sprintf("user id (of the admin user): %d", newUserId))
+
+	// Get username of admin
+	grabUser := arch.Macros["grab_user"]
+	grabRes, err := grabUser.Exec(db, map[string]any{"UserId": newUserId})
+
+	newUsername, _ := macro.GetOrFallback[string](grabRes, "Username", "(no username found)")
+	fmt.Println(fmt.Sprintf("admin username: %s", newUsername))
 }
