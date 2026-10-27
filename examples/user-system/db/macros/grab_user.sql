@@ -1,2 +1,2 @@
-SELECT Password, Salt FROM Users 
+SELECT Username, Password, Salt FROM Users 
 WHERE UserId = @UserId;
