@@ -1,6 +1,7 @@
 package table
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"

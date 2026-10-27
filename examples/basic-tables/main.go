@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	architect "github.com/snackbag/mysql-architect"
-	"github.com/snackbag/mysql-architect/macro"
+	"github.com/snackbag/mysql-architect/macros"
 )
 
 const username = "architectUser"
@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err := arch.InitDB(username, password, dbName)
+	db, err := arch.Init(username, password, dbName)
 	if err != nil {
 		panic(err)
 	}
@@ -37,10 +37,10 @@ func main() {
 	}
 
 	// Extract values from queries
-	newUserId, _ := macro.Get[int](userRes, "UserId") // user id of normal user
+	newUserId, _ := macros.Get[int](userRes, "UserId") // user id of normal user
 	fmt.Println(fmt.Sprintf("user id (of the normal user): %d", newUserId))
 
-	newUserId, _ = macro.Get[int](adminRes, "UserId") // user id of admin user
+	newUserId, _ = macros.Get[int](adminRes, "UserId") // user id of admin user
 	fmt.Println(fmt.Sprintf("user id (of the admin user): %d", newUserId))
 
 	// Get username of admin
@@ -50,6 +50,6 @@ func main() {
 		panic(err)
 	}
 
-	newUsername, _ := macro.GetOrFallback[string](grabRes, "Username", "(no username found)")
+	newUsername, _ := macros.GetOrFallback[string](grabRes, "Username", "(no username found)")
 	fmt.Println(fmt.Sprintf("admin username: %s", newUsername))
 }

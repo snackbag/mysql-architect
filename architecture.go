@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/snackbag/mysql-architect/macro"
+	"github.com/snackbag/mysql-architect/macros"
 	"github.com/snackbag/mysql-architect/table"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -16,7 +16,7 @@ import (
 
 type Architecture struct {
 	Tables []table.Table
-	Macros map[string]macro.Macro
+	Macros map[string]macros.Macro
 }
 
 func LoadArchitecture(dir string) (Architecture, error) {
@@ -37,7 +37,7 @@ func LoadArchitecture(dir string) (Architecture, error) {
 	}
 
 	// load tables
-	arch := Architecture{Tables: make([]table.Table, 0), Macros: make(map[string]macro.Macro)}
+	arch := Architecture{Tables: make([]table.Table, 0), Macros: make(map[string]macros.Macro)}
 	for _, t := range raw.Tables {
 		data, err = os.ReadFile(filepath.Join(dir, filepath.FromSlash(t)+".json"))
 		if err != nil {
@@ -58,7 +58,7 @@ func LoadArchitecture(dir string) (Architecture, error) {
 			return arch, fmt.Errorf("failed to read macro: %w", err)
 		}
 
-		loaded, err := macro.LoadMacro(dir, m, data)
+		loaded, err := macros.LoadMacro(dir, m, data)
 		if err != nil {
 			return arch, err
 		}

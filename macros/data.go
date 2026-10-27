@@ -1,4 +1,4 @@
-package macro
+package macros
 
 import (
 	"database/sql"
