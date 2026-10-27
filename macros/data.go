@@ -24,17 +24,17 @@ type Result struct {
 // Get returns the value assigned to the specified key of a macro's return result,
 // in addition to a boolean indicator showing whether the key was valid. It automatically
 // converts the return value into the requested type.
-func Get[S any](res Result, key string) (S, bool) {
+func Get[S any](result Result, key string) (S, bool) {
 	var zero S
-	return GetOrFallback[S](res, key, zero)
+	return GetOrFallback[S](result, key, zero)
 }
 
 // GetOrFallback returns the value assigned to the specified key of a macro's return result,
 // in addition to a boolean indicator showing whether the key was valid. If no value was assigned
 // to the key, it returns the fallback value. It automatically converts the return value into
 // the requested type.
-func GetOrFallback[S any](res Result, key string, fallback S) (S, bool) {
-	d, ok := res.Raw[key]
+func GetOrFallback[S any](result Result, key string, fallback S) (S, bool) {
+	d, ok := result.Raw[key]
 	if !ok {
 		return fallback, false
 	}
