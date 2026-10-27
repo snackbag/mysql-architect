@@ -13,7 +13,7 @@ import (
 
 type Macro struct {
 	Name    string
-	Params  []Parameter
+	Params  map[string]Parameter
 	Program []Script `json:"execute"`
 }
 
@@ -28,7 +28,7 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 		return Macro{}, fmt.Errorf("failed to unmarshal macro %q: %w", name, err)
 	}
 
-	macro := Macro{Name: name, Params: make([]Parameter, 0), Program: raw.Program}
+	macro := Macro{Name: name, Params: make(map[string]Parameter), Program: raw.Program}
 	for key, param := range raw.Params {
 		t, err := types.GetType(types.ToFormat(param.RawType))
 		if err != nil {
@@ -37,7 +37,7 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 
 		param.Type = t
 		param.Name = key
-		macro.Params = append(macro.Params, param)
+		macro.Params[key] = param
 	}
 
 	// load scripts
