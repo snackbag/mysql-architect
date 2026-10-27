@@ -59,7 +59,19 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 
 func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 	if m.Name == "" {
-		return Result{make(map[string]any)}, errors.New("cannot run nameless macro")
+		return Result{make(map[string]any)}, errors.New("cannot execute nameless macro")
+	}
+
+	// ensure all parameters are set
+	for _, macroParam := range m.Params {
+		_, ok := globalParams[macroParam.Name]
+		if !ok {
+			if macroParam.Fallback == nil {
+				return Result{}, fmt.Errorf("cannot execute macro %s, because parameter %s is not set and has no fallback value", m.Name, macroParam.Name)
+			}
+
+			globalParams[macroParam.Name] = macroParam.Fallback
+		}
 	}
 
 	raw := make(map[string]any) // return values
