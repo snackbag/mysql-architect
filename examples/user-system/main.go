@@ -24,13 +24,13 @@ func main() {
 	defer db.Close()
 
 	// Create users
-	newUser := arch.Macros["new_user"]
+	newUser := arch.Macros["macros/new_user"]
 	userRes, err := newUser.Exec(db, map[string]any{"Username": "Test", "Password": "TestPassword", "Salt": "TestSalt"})
 	if err != nil {
 		panic(err)
 	}
 
-	newAdmin := arch.Macros["new_admin"]
+	newAdmin := arch.Macros["macros/new_admin"]
 	adminRes, err := newAdmin.Exec(db, map[string]any{"Username": "Testwo", "Password": "TestPassword", "Salt": "TestSalt"})
 	if err != nil {
 		panic(err)
@@ -44,8 +44,11 @@ func main() {
 	fmt.Println(fmt.Sprintf("user id (of the admin user): %d", newUserId))
 
 	// Get username of admin
-	grabUser := arch.Macros["grab_user"]
+	grabUser := arch.Macros["macros/grab_user"]
 	grabRes, err := grabUser.Exec(db, map[string]any{"UserId": newUserId})
+	if err != nil {
+		panic(err)
+	}
 
 	newUsername, _ := macro.GetOrFallback[string](grabRes, "Username", "(no username found)")
 	fmt.Println(fmt.Sprintf("admin username: %s", newUsername))

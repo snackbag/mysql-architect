@@ -58,7 +58,7 @@ func LoadArchitecture(dir string) (Architecture, error) {
 			return arch, fmt.Errorf("failed to read macro: %w", err)
 		}
 
-		loaded, err := macro.LoadMacro(dir, m[strings.LastIndex(m, "/")+1:], data)
+		loaded, err := macro.LoadMacro(dir, m, data)
 		if err != nil {
 			return arch, err
 		}

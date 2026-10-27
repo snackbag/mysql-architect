@@ -59,7 +59,7 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 
 func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 	if m.Name == "" {
-		return Result{make(map[string]any)}, errors.New("cannot execute nameless macro")
+		return Result{make(map[string]any)}, errors.New("macro not found")
 	}
 
 	// ensure all parameters are set
