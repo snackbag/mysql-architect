@@ -27,6 +27,8 @@ type Format struct {
 
 	Link   string `json:"link"`
 	Column string `json:"column"`
+
+	Fsp uint8 `json:"fsp"`
 }
 
 func GetType(raw Format) (DBType, error) {
@@ -60,8 +62,18 @@ func GetType(raw Format) (DBType, error) {
 		return IntType[uint64]{Size: BigInt, Unsigned: true}, nil
 
 	// bool
-	case "bool", "boolean":
+	case "bool":
 		return Boolean{}, nil
+
+	// time
+	case "date":
+		return Date{}, nil
+	case "time":
+		return Time{Fsp: raw.Fsp}, nil
+	case "datetime":
+		return Datetime{Fsp: raw.Fsp}, nil
+	case "timestamp":
+		return Timestamp{Fsp: raw.Fsp}, nil
 
 	default:
 		return nil, fmt.Errorf("invalid DBType: %s", raw.Name)
