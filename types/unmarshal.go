@@ -59,6 +59,10 @@ func GetType(raw Format) (DBType, error) {
 	case "ubigint":
 		return IntType[uint64]{Size: BigInt, Unsigned: true}, nil
 
+	// bool
+	case "bool", "boolean":
+		return Boolean{}, nil
+
 	default:
 		return nil, fmt.Errorf("invalid DBType: %s", raw.Name)
 	}
