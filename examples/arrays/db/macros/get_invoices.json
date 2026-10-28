@@ -4,7 +4,7 @@
     },
     
     "execute": [{
-        "file": "get_invoices.sql",
+        "file": "macros/get_invoices.sql",
         "values": {"CustomerId": "CustomerId"},
         "return": ["InvoiceAmounts"]
     }]

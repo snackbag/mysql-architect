@@ -6,7 +6,7 @@
     },
     
     "execute": [{
-        "file": "new_invoice.sql",
+        "file": "macros/new_invoice.sql",
         "values": {"CustomerId": "CustomerId", "Amount": "Amount", "Timestamp": "CurrentTime"}
     }]
 }
