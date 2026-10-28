@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS Customers;
-DROP TABLE IF EXISTS Payments;

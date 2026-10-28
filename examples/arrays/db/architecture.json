@@ -1,4 +1,4 @@
 {
-    "tables": ["tables/Customers", "tables/Payments"],
-    "macros": ["macros/drop_all", "macros/new_customer", "macros/new_invoice", "macros/get_invoices"]
+    "tables": ["tables/Customers", "tables/Invoices"],
+    "macros": ["macros/new_customer", "macros/new_invoice", "macros/get_invoices"]
 }

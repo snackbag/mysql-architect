@@ -31,9 +31,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// drop all tables and create new ones so you can run the example however often you want
-	ensureFreshDB()
-
 	// database actions
 	john := registerCustomer("John")
 	mary := registerCustomer("Mary")
@@ -62,7 +59,7 @@ func registerCustomer(name string) int {
 
 func registerInvoice(customerId int, amount int) {
 	macro, _ := architecture.Macros["macros/new_invoice"]
-	_, err := macro.Exec(db, map[string]any{"CustomerId": customerId, "Amount": amount})
+	_, err := macro.Exec(db, map[string]any{"CustomerId": customerId, "Amount": amount, "CurrentTime": time.Now()})
 	if err != nil {
 		panic(err)
 	}
@@ -77,17 +74,4 @@ func getInvoices(customerId int) []int {
 
 	invoices, _ := macros.Get[[]int](result, "InvoiceAmounts")
 	return invoices
-}
-
-func ensureFreshDB() {
-	macro, _ := architecture.Macros["macros/drop_all"]
-	_, err := macro.Exec(db, map[string]any{})
-	if err != nil {
-		panic(err)
-	}
-
-	err = architecture.InitTables(db)
-	if err != nil {
-		panic(err)
-	}
 }
