@@ -17,9 +17,10 @@ For examples, see [/examples](/examples).
 
 MySQL Architect manages tables for you, which are defined in your architecture. An architecture
 is defined by an `architecture.json` file inside a directory. This file registers all tables and
-macros.
+macros. You can define tables and macros in any directory, as long as they are inside the 
+architecture root.
 
-You should write every path is with forward slashes, as they are translated automatically.
+Every path should be defined with forward slashes, since they're translated automatically.
 
 ```json
 {
@@ -28,9 +29,6 @@ You should write every path is with forward slashes, as they are translated auto
 }
 ```
 
-You can define tables and macros in any directory, as long as they are inside the architecture
-root.
-
 ```go
 import architect "github.com/snackbag/mysql-architect"
 
@@ -38,7 +36,7 @@ func main() {
     // load all macros and tables
     arch, err := architect.LoadArchitecture("db")
     if err != nil {
-    panic(err)
+        panic(err)
     }
     
     // open db connection and create all tables
@@ -56,12 +54,7 @@ A table's JSON file is similar to its schema, and is built like so:
 ```json
 {
     "columns": [
-        {
-            "name": "UserId",
-            "type": "int",
-            "primary": true,
-            "autoIncrement": true
-        }
+        { "name": "UserId", "type": "int", "primary": true, "autoIncrement": true }
     ]
 }
 ```
@@ -69,20 +62,15 @@ A table's JSON file is similar to its schema, and is built like so:
 Columns must have a `name` and `type`. Additionally, they may also be `primary` (bool), `unique`
 (bool), `autoIncrement` (bool) and `nullable` (bool). You can create foreign keys by using
 `references`, as shown in the
-[/examples/basic-tables](/examples/basic-tables/db/tables/UserPermissions.json) example.
+[/examples/basic-tables UserPermissions](/examples/basic-tables/db/tables/UserPermissions.json) 
+example.
 
 MySQL Architect supports text, varchar, all sizes of integer (+unsigned integers), booleans, date,
-time, datetime and timestamp. More data can be given to types by using a JSON object instead of
-a string, which supports `length` (for varchar) and `fsp` (for time related things). For example:
+time, datetime and timestamp. Types can be influenced by using a JSON object instead of
+a string, which supports `length` (for varchar) and `fsp` (for time related types). For example:
 
 ```json
-{
-    "name": "Username",
-    "type": {
-        "name": "varchar",
-        "length": 255
-    }
-}
+{ "name": "Username", "type": { "name": "varchar", "length": 255 } }
 ```
 
 ### Macros
@@ -93,30 +81,17 @@ starts a transaction and commits it after all queries successfully execute.
 ```json
 {
     "params": {
-        "UserId": {
-            "type": "int"
-        },
-        "Username": {
-            "type": {
-                "name": "varchar",
-                "length": 255
-            }
-        }
+        "UserId": { "type": "int" },
+        "Username": { "type": { "name": "varchar", "length": 255 } }
     },
-    "execute": [
-        {
+    
+    "execute": [{
             "file": "macros/new_user.sql",
-            "values": {
-                "Username": "Username",
-                "Password": "Password"
-            },
+            "values": { "Username": "Username", "Password": "Password" },
             "overwriteParams": true
-        },
-        {
+        }, {
             "file": "macros/set_admin.sql",
-            "values": {
-                "UserId": "UserId"
-            }
+            "values": { "UserId": "UserId" }
         }
     ]
 }
@@ -135,9 +110,12 @@ VALUES (@UserId, 'admin');
 ```
 
 All macros must be registered in `architecture.json` as seen in the introduction. Macros can
-take parameters, which can be assigned to values inside scripts. The `values` key in script
-definitions takes a parameter name and assigns that name to the value in the script. When the
-macro is executed, MySQL Architect ensures the values are inserted in the correct order.
+take parameters, which can be assigned to values inside scripts. Parameters also support a 
+`fallback` key, whose value is chosen when the parameter is unset at macro execution. 
+
+The `values` key in script definitions takes a parameter name and assigns that name to the 
+value in the script. When the macro is executed, MySQL Architect ensures the values are inserted 
+in the correct order.
 
 ```go
 // execute macro
@@ -152,9 +130,9 @@ userId, _ = macros.Get[int](result, "UserId")
 ```
 
 You can use `macros.Get` to get columns returned by the macro. When `overwriteParams` is enabled,
-columns replace the parameters for the next script. That means that if the first script returns
+columns replace the parameters for the next script. That means if the first script returns
 `UserId` and a parameter named `UserId` exists, the parameter's value gets overwritten with the
 new value.
 
-For more information about multiple returned values,
-see [/examples/basic-tables](/examples/basic-tables).
+For more information about multiple returned values, see
+[/examples/basic-tables](/examples/basic-tables).
