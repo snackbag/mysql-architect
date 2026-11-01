@@ -35,17 +35,17 @@ root.
 import architect "github.com/snackbag/mysql-architect"
 
 func main() {
-// load all macros and tables
-arch, err := architect.LoadArchitecture("db")
-if err != nil {
-panic(err)
-}
-
-// open db connection and create all tables
-db, err := arch.Init(username, password, dbName)
-if err != nil {
-panic(err)
-}
+    // load all macros and tables
+    arch, err := architect.LoadArchitecture("db")
+    if err != nil {
+    panic(err)
+    }
+    
+    // open db connection and create all tables
+    db, err := arch.Init(username, password, dbName)
+    if err != nil {
+        panic(err)
+    }
 }
 ```
 
@@ -144,7 +144,7 @@ macro is executed, MySQL Architect ensures the values are inserted in the correc
 macro := arch.Macros["macros/new_admin"]
 result, err := macro.Exec(db, map[string]any{"Username": "admin", "Password": "spinach"})
 if err != nil {
-panic(err)
+    panic(err)
 }
 
 // get user id
