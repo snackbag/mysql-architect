@@ -69,8 +69,8 @@ func LoadArchitecture(dir string) (Architecture, error) {
 }
 
 // Init opens a connection to the database and creates the defined tables. Returns the database
-// connection and an error. An error does not necessarily mean the database wasn't connected.
-// DO NOT FORGET to close the connection!
+// connection and an error. When an error is returned during initialization, the database connection
+// is automatically closed.
 func (a Architecture) Init(username string, password string, dbName string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s", username, password, dbName))
 
@@ -80,6 +80,7 @@ func (a Architecture) Init(username string, password string, dbName string) (*sq
 
 	err = a.InitTables(db)
 	if err != nil {
+		db.Close()
 		return db, err
 	}
 
