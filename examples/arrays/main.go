@@ -72,6 +72,6 @@ func getInvoices(customerId int) []int {
 		panic(err)
 	}
 
-	invoices, _ := macros.Get[[]int](result, "InvoiceAmounts")
+	invoices, _ := macros.Get[[]int](result, "Amount")
 	return invoices
 }

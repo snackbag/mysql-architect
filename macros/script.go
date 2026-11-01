@@ -11,7 +11,6 @@ var paramRegex = regexp.MustCompile("@([A-Za-z_0-9]+)")
 type Script struct {
 	File            string            `json:"file"`
 	Values          map[string]string `json:"values"`
-	Return          []string          `json:"return"`
 	OverwriteParams bool              `json:"overwriteParams"`
 
 	Statements []Statement
@@ -47,19 +46,23 @@ func ParseScript(data []byte) []Statement {
 	return stmts
 }
 
-func (s Statement) Exec(tx *sql.Tx, args []any) ([]any, error) {
+func (s Statement) Exec(tx *sql.Tx, args []any) (map[string][]any, error) {
 	rows, err := tx.Query(s.Query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var returned []any
+	returned := make(map[string][]any) // map[column][]row
 
 	for {
 		columns, err := rows.Columns()
 		if err != nil {
 			return nil, err
+		}
+
+		for _, column := range columns {
+			returned[column] = make([]any, 0)
 		}
 
 		for rows.Next() {
@@ -74,7 +77,9 @@ func (s Statement) Exec(tx *sql.Tx, args []any) ([]any, error) {
 				return nil, err
 			}
 
-			returned = append(returned, values...)
+			for i, column := range columns {
+				returned[column] = append(returned[column], values[i])
+			}
 		}
 
 		if err := rows.Err(); err != nil {

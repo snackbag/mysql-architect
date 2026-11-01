@@ -3,6 +3,8 @@ package macros
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"reflect"
 
 	"github.com/snackbag/mysql-architect/types"
 )
@@ -18,7 +20,7 @@ type Parameter struct {
 // Result is returned after a macro finished executing and contains its raw values.
 // For safe reading, it is recommended to use Get or GetOrFallback.
 type Result struct {
-	Raw map[string]any // Raw is a map containing all raw information the macro was tasked to extract.
+	Raw map[string][]any // Raw is a map containing all raw information the macro was tasked to extract.
 }
 
 // Get returns the value assigned to the specified key of a macro's return result,
@@ -39,7 +41,19 @@ func GetOrFallback[S any](result Result, key string, fallback S) (S, bool) {
 		return fallback, false
 	}
 
-	converted, err := convertGet[S](d)
+	var r any
+
+	if reflect.TypeOf(fallback).Kind() != reflect.Slice {
+		if len(d) > 0 {
+			r = d[0]
+		} else {
+			r = fallback
+		}
+	} else {
+		r = d
+	}
+
+	converted, err := convertGet[S](r)
 	if err != nil {
 		return fallback, false
 	}
@@ -47,8 +61,44 @@ func GetOrFallback[S any](result Result, key string, fallback S) (S, bool) {
 }
 
 func convertGet[S any](val any) (S, error) {
-	var result sql.Null[S]
 	var zero S
+
+	target := reflect.TypeOf((*S)(nil)).Elem()
+
+	if target.Kind() != reflect.Slice {
+		return scanValue[S](val)
+	}
+
+	values, ok := val.([]any)
+	if !ok {
+		return zero, fmt.Errorf("expected slice, got %T", val)
+	}
+
+	result := reflect.MakeSlice(target, len(values), len(values))
+
+	for i, value := range values {
+		converted, err := scanValue[any](value)
+		if err != nil {
+			return zero, err
+		}
+
+		elem := reflect.ValueOf(converted)
+
+		if elem.Type().ConvertibleTo(target.Elem()) {
+			elem = elem.Convert(target.Elem())
+		} else {
+			return zero, fmt.Errorf("cannot convert %T to %s", value, target.Elem())
+		}
+
+		result.Index(i).Set(elem)
+	}
+
+	return result.Interface().(S), nil
+}
+
+func scanValue[T any](val any) (T, error) {
+	var result sql.Null[T]
+	var zero T
 
 	if err := result.Scan(val); err != nil {
 		return zero, err

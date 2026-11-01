@@ -59,7 +59,7 @@ func LoadMacro(baseDir string, name string, data []byte) (Macro, error) {
 
 func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 	if m.Name == "" {
-		return Result{make(map[string]any)}, errors.New("macro not found")
+		return Result{make(map[string][]any)}, errors.New("macro not found")
 	}
 
 	// ensure all parameters are set
@@ -74,7 +74,7 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 		}
 	}
 
-	raw := make(map[string]any) // return values
+	raw := make(map[string][]any) // return values
 
 	// begin tx
 	tx, err := db.Begin()
@@ -85,7 +85,7 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 
 	// go through each script and execute
 	for _, script := range m.Program {
-		returned := make([]any, 0)
+		returned := make(map[string][]any)
 		sqlParams := make(map[string]any)
 		for param, link := range script.Values {
 			value, ok := globalParams[link]
@@ -102,21 +102,24 @@ func (m Macro) Exec(db *sql.DB, globalParams map[string]any) (Result, error) {
 			if err != nil {
 				return Result{raw}, fmt.Errorf("execute script in %q: %w", script.File, err)
 			}
-			returned = append(returned, values...)
+
+			for key, value := range values {
+				_, exists := returned[key]
+				if exists {
+					return Result{raw}, fmt.Errorf("script %q returns a value of key %s, but that key is already in use by another script", script.File, key)
+				}
+
+				returned[key] = value
+			}
 		}
 
-		if len(returned) < len(script.Return) {
-			return Result{raw}, fmt.Errorf(
-				"script %q returned %d values, but %d were expected",
-				script.File, len(returned), len(script.Return),
-			)
-		}
-
-		for i, name := range script.Return {
-			raw[name] = returned[i]
+		for key, values := range returned {
+			raw[key] = returned[key]
 
 			if script.OverwriteParams {
-				globalParams[name] = returned[i]
+				if len(values) == 1 {
+					globalParams[key] = returned[key][0]
+				}
 			}
 		}
 	}
