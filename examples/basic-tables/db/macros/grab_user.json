@@ -5,7 +5,6 @@
     
     "execute": [{
         "file": "macros/grab_user.sql",
-        "values": {"UserId": "UserId"},
-        "return": ["Username","Password", "Salt"]
+        "values": {"UserId": "UserId"}
     }]
 }

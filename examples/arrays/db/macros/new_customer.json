@@ -6,7 +6,6 @@
     
     "execute": [{
         "file": "macros/new_customer.sql",
-        "values": {"Name": "Name", "RegistrationDate": "CurrentTime"},
-        "return": ["CustomerId"]
+        "values": {"Name": "Name", "RegistrationDate": "CurrentTime"}
     }]
 }

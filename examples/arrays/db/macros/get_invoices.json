@@ -5,7 +5,6 @@
     
     "execute": [{
         "file": "macros/get_invoices.sql",
-        "values": {"CustomerId": "CustomerId"},
-        "return": ["InvoiceAmounts"]
+        "values": {"CustomerId": "CustomerId"}
     }]
 }

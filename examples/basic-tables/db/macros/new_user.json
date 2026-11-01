@@ -7,7 +7,6 @@
     
     "execute": [{
         "file": "macros/new_user.sql",
-        "values": {"Username": "Username", "Password": "Password", "Salt": "Salt"},
-        "return": ["UserId"]
+        "values": {"Username": "Username", "Password": "Password", "Salt": "Salt"}
     }]
 }

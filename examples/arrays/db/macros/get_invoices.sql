@@ -1,2 +1,2 @@
-SELECT (Amount) FROM Invoices
+SELECT Amount, Timestamp FROM Invoices
 WHERE CustomerId = @CustomerId;
