@@ -21,7 +21,7 @@ macros.
 
 You should write every path is with forward slashes, as they are translated automatically.
 
-```
+```json
 {
     "tables": ["tables/Users.json"],
     "macros": ["macros/get_user_by_name", "macros/get_user_by_id", "macros/new_user"]
